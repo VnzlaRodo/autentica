@@ -18,10 +18,10 @@ export default function Navigation() {
     return (
      <NavigationContainer>
         <Tab.Navigator 
-            initialRouteName='perfilStack'
+            initialRouteName='adminStack'
             screenOptions={ ({ route }) => ({
                 tabBarInactiveTintColor: "#646464",
-                tabBarActiveTintColor: "#026D62",
+                tabBarActiveTintColor: "#00a680",
 
                 tabBarIcon: ({ color }) => screenOptions(route, color),
                 
