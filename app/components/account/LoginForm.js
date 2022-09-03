@@ -1,69 +1,62 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, Alert } from 'react-native'
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Input, Button, Icon  } from 'react-native-elements';
-import { validateEmail } from '../../utils/validations';
 import { useNavigation } from "@react-navigation/native";
+import { validateEmail } from '../../utils/validations';
 
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp } from '@firebase/app';
 import { firebaseConfig } from '../../utils/firebase';
 import { size, isEmpty } from 'lodash';
 
-export default function RegisterForm() {
+export default function LoginForm() {
     const [ showPassword, setShowPassword ] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [repeatPassword, setRepeatPassword] = useState('');
+    const navigation = useNavigation();
     
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);    
 
-    const navigation = useNavigation();
-
     const onSubmit = () => {
-        if ( isEmpty(email) || isEmpty(password) || isEmpty(repeatPassword) ){
+        if ( isEmpty(email) || isEmpty(password) ){
             Alert.alert("Todos los campos son obligatorios");
         } 
         else if (!validateEmail(email)){
             Alert.alert("Email invalido");
         }
-        else if (password !== repeatPassword){
-            Alert.alert("Las contraseñas no coinciden");            
-        }
+       
         else if ( size(password) < 6  ){
             Alert.alert("La contraseña debe ser mayor a 6 digitos");
         }
         else {
-            handleCreateAccount();
+            handleSignIn();
         }
     }
-    
-    const handleCreateAccount = () => {
-        createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) =>{
-            Alert.alert('Cuenta Creada');
-            const user = userCredential.user;
-            console.log(user);
-            navigation.navigate('login')
-        })
-        .catch(error => {
-            switch (error.message) {
-                case "Firebase: Error (auth/invalid-email).":
-                    Alert.alert("Campo email invalido");
-                    break;
-                case "Firebase: Error (auth/missing-email).":
-                    Alert.alert("Campo email vacio");
-                    break;
-                case "Firebase: Error (auth/email-already-in-use).":
-                    Alert.alert("Email ya en uso");
-                    break;
-                default:
-               Alert.alert(error.message);
 
-                    break;
-            }
-        })
+    const handleSignIn = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((useCredential) => {
+                //Alert.alert("logeado");
+                const user = useCredential.user;
+                console.log(user);
+                navigation.navigate("logout");
+            })
+            .catch(error => {
+                switch (error.message) {                    
+                    case "Firebase: Error (auth/user-not-found).":
+                        Alert.alert("Usuario invalido");
+                        break;
+                    case "Firebase: Error (auth/wrong-password).":
+                        Alert.alert("Contraseña equivocada");
+                        break;
+                
+                    default:
+                        break;
+                }
+                console.log(error)
+            })
     }
 
   return (
@@ -95,26 +88,18 @@ export default function RegisterForm() {
         }
         onChangeText={(text) => setPassword(text)}        
       />
-      <Input 
-        placeholder='Repetir Contraseña'
-        containerStyle={styles.inputForm}
-        password={true}
-        secureTextEntry={showRepeatPassword ? false : true}
-        rightIcon={
-            <Icon 
-                type='material-community'
-                name={showRepeatPassword ? "eye-off-outline" : "eye-outline"}
-                iconStyle={styles.iconRight}
-                onPress={() => setShowRepeatPassword(!showRepeatPassword)}
-            />
-        }
-        onChangeText={(text) => setRepeatPassword(text)} 
-      />
+      
       <Button
-        onPress={onSubmit}
+        onPress={onSubmit} 
+        title="Entrar"
+        containerStyle={styles.btnContainerLogin}
+        buttonStyle={styles.btnLogin}
+      />
+      <Button 
         title="Registrarse"
-        containerStyle={styles.btnContainerRegister}
+        containerStyle={styles.btnContainerLogin}
         buttonStyle={styles.btnRegister}
+        onPress={() => navigation.navigate("register")}
       />
     </View>
   )
@@ -131,12 +116,15 @@ const styles = StyleSheet.create({
         width: "100%",
         marginTop: 20
     },
-    btnContainerRegister:{
+    btnContainerLogin:{
         marginTop: 20,
         width: "95%"
     },
-    btnRegister:{
+    btnLogin:{
         backgroundColor: "#00a680"
+    },
+    btnRegister:{
+        backgroundColor: "purple"
     },
     iconRight:{
         color: "#c1c1c1"

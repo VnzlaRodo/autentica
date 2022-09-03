@@ -9,14 +9,14 @@ import AttendanceStack from './AttendanceStack';
 import ReservationStack from './ReservationStack';
 import SocialStack from './SocialStack';
 import ProfileStack from './ProfileStack';
+import AccountStack from './AccountStack';
 
 
 const Tab = createBottomTabNavigator();
 
 export default function Navigation() {
   
-    return (
-     <NavigationContainer>
+    return (     
         <Tab.Navigator 
             initialRouteName='adminStack'
             screenOptions={ ({ route }) => ({
@@ -26,7 +26,8 @@ export default function Navigation() {
                 tabBarIcon: ({ color }) => screenOptions(route, color),
                 
             })}
-        >
+        >   
+            
             <Tab.Screen 
                 name="adminStack"
                 component={AdminStack} 
@@ -52,8 +53,7 @@ export default function Navigation() {
                 component={ProfileStack} 
                 options={{ headerShown: false, title: "Perfil" }} 
             />
-        </Tab.Navigator>
-     </NavigationContainer>
+        </Tab.Navigator>     
     )
   
 }
