@@ -1,6 +1,4 @@
-import { initializeApp } from "firebase/app";
-
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDrJ_m4OC_ANhwLSNGqv-ncLlnJRFoGpPE",
   authDomain: "autentica-app.firebaseapp.com",
   projectId: "autentica-app",
@@ -10,4 +8,3 @@ const firebaseConfig = {
 };
 
 
-const firebaseApp = initializeApp(firebaseConfig);

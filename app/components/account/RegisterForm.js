@@ -1,11 +1,33 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableNativeFeedback } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { Input, Button, Icon  } from 'react-native-elements';
-import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+
+
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { initializeApp } from '@firebase/app';
+import { firebaseConfig } from '../../utils/firebase';
 
 export default function RegisterForm() {
     const [ showPassword, setShowPassword ] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);    
+
+    const handleCreateAccount = () => {
+        createUserWithEmailAndPassword(auth, email, password)
+        .then(() =>{
+            console.log('Cuenta Creada');
+            const user = userCredential.user;
+            console.log(user);
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    }
+
   return (
     <View styles={styles.formContainer}>
       <Input 
@@ -18,6 +40,7 @@ export default function RegisterForm() {
                 iconStyle={styles.iconRight}
             />
         }
+        onChangeText={(text) => setEmail(text)}
       />
       <Input 
         placeholder='Contraseña'
@@ -30,8 +53,9 @@ export default function RegisterForm() {
                 name={showPassword ? "eye-off-outline" : "eye-outline"}
                 iconStyle={styles.iconRight}
                 onPress={() => setShowPassword(!showPassword)}
-            />            
+            />  
         }
+        onChangeText={(text) => setPassword(text)}        
       />
       <Input 
         placeholder='Repetir Contraseña'
@@ -46,8 +70,10 @@ export default function RegisterForm() {
                 onPress={() => setShowRepeatPassword(!showRepeatPassword)}
             />
         }
+        onChangeText={(text) => setPassword(text)} 
       />
-      <Button 
+      <Button
+        onPress={handleCreateAccount} 
         title="Unirse"
         containerStyle={styles.btnContainerRegister}
         buttonStyle={styles.btnRegister}
